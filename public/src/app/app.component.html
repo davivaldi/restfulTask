@@ -1,0 +1,20 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div style="text-align:center">
+  <h1>
+    Restful Tasks API
+<div>
+  
+  <button (click)="onButtonClick()">Get all Tasks</button>
+</div>
+
+<div *ngFor="let task of tasks">
+ <h5> {{task.title}} </h5> 
+  <button (click)="showDesc(task)">Get description of Task</button>
+  
+</div>
+
+<div *ngIf="task">
+  {{task.description}}
+</div>
+
+<router-outlet></router-outlet>
