@@ -3,11 +3,11 @@ module.exports = function(app) {
    
     app.get("/api/tasks", task.index)
 
-    app.get("/api/task/:id", task.getTask)
+    app.get("/api/task/:_id", task.getTask)
     
     app.post("/api/task", task.createTask)
     
-    app.get("/api/task/:id", task.updateOne)
+    app.put("/api/task/:_id", task.updateOne)
 
-    app.get("/api/task/:id", task.deleteOne)
+    app.delete("/api/task/:_id", task.deleteOne)
 }

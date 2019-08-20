@@ -30,7 +30,18 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    Restful Tasks API\n<div>\n  \n  <button (click)=\"onButtonClick()\">Get all Tasks</button>\n</div>\n\n<div *ngFor=\"let task of tasks\">\n <h5> {{task.title}} </h5> \n  <button (click)=\"showDesc(task)\">Get description of Task</button>\n  \n</div>\n\n<div *ngIf=\"task\">\n  {{task.description}}\n</div>\n\n<router-outlet></router-outlet>\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    New Task\n  </h1>\n  <div >\n    \n    <form (submit)=\"onSubmit()\">\n        <!-- use the json pipe to see how newTask changes in real time -->\n        <p> {{ newTask | json }} </p>\n        <input type=\"text\" name=\"newTask.title\" [(ngModel)]=\"newTask.title\" />\n        <input type=\"text\" name=\"newTask.description\" [(ngModel)]=\"newTask.description\" />\n      </form>\n      \n    </div>\n    <div>\n      \n      <button (click)=\"onButtonClick()\">Get all Tasks</button>\n    </div>\n    \n    <div *ngFor=\"let task of tasks\">\n <h3> {{task.title}} </h3> \n <h5> {{task.description}} </h5> \n  <button (click)=\"editTask(task)\">EDIT</button>\n  <button (click)=\"deleteTask(task)\">DELETE</button>\n  \n</div>\n\n<app-task></app-task>\n<div *ngIf=\"task\">\n  <form (submit)=\"onSubmitEdit(task._id)\">\n    <input type=\"text\" name=\"task.title\" [(ngModel)]=\"task.title\" />\n    <input type=\"text\" name=\"task.description\" [(ngModel)]=\"task.description\" />\n    <input type=\"submit\" value=\"Edit Task\" />\n    \n  </form>\n\n</div>\n\n\n\n\n\n\n\n\n</div>\n\n<router-outlet></router-outlet>\n"
+
+/***/ }),
+
+/***/ "./node_modules/raw-loader/index.js!./src/app/task/task.component.html":
+/*!********************************************************************!*\
+  !*** ./node_modules/raw-loader!./src/app/task/task.component.html ***!
+  \********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<p>task works!</p>\n"
 
 /***/ }),
 
@@ -99,6 +110,10 @@ let AppComponent = class AppComponent {
     }
     ngOnInit() {
         this.getTasksFromService();
+        this.newTask = {
+            title: "Learn Angular Forms",
+            description: "Two way binding is awesome!"
+        };
     }
     getTasksFromService() {
         let observable = this._httpService.getTasks();
@@ -108,13 +123,35 @@ let AppComponent = class AppComponent {
         });
     }
     onButtonClick() {
-        console.log(`Click event is working`);
+        console.log(`Click get all event is working`);
         let obserable = this._httpService.getTasks();
         obserable.subscribe((data) => (this.tasks = data));
     }
     showDesc(task) {
-        console.log(`Click event is working`);
+        console.log(`Click show event is working`);
         this.task = task;
+    }
+    editTask(task) {
+        console.log(`Click editevent is working`);
+        this.task = task;
+    }
+    deleteTask(task) {
+        console.log(`Click event delete is working`);
+        this._httpService.deleteOne(task).subscribe(data => console.log(data));
+    }
+    onSubmit() {
+        let observable = this._httpService.createTask(this.newTask);
+        observable.subscribe(data => {
+            console.log("Got data from the form", data);
+            this.newTask = { title: "", description: "" };
+        });
+    }
+    onSubmitEdit(task) {
+        let observable = this._httpService.updateOne(this.task);
+        observable.subscribe(data => {
+            console.log("Got data from the form", data);
+            this.task = { title: "", description: "" };
+        });
     }
 };
 AppComponent.ctorParameters = () => [
@@ -149,6 +186,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./app-routing.module */ "./src/app/app-routing.module.ts");
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm2015/http.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm2015/forms.js");
+/* harmony import */ var _task_task_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./task/task.component */ "./src/app/task/task.component.ts");
+
+
 
 
 
@@ -161,12 +202,14 @@ let AppModule = class AppModule {
 AppModule = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
     Object(_angular_core__WEBPACK_IMPORTED_MODULE_2__["NgModule"])({
         declarations: [
-            _app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"]
+            _app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"],
+            _task_task_component__WEBPACK_IMPORTED_MODULE_8__["TaskComponent"]
         ],
         imports: [
             _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
             _app_routing_module__WEBPACK_IMPORTED_MODULE_4__["AppRoutingModule"],
-            _angular_common_http__WEBPACK_IMPORTED_MODULE_6__["HttpClientModule"]
+            _angular_common_http__WEBPACK_IMPORTED_MODULE_6__["HttpClientModule"],
+            _angular_forms__WEBPACK_IMPORTED_MODULE_7__["FormsModule"],
         ],
         providers: [_http_service__WEBPACK_IMPORTED_MODULE_3__["HttpService"]],
         bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"]]
@@ -205,17 +248,17 @@ let HttpService = class HttpService {
         //     tempObservable.subscribe(data => console.log("Got our tasks!", data));
         return this._http.get('/api/tasks');
     }
-    getTask() {
-        let obserable = this._http.get('/api/task/:id');
-        obserable.subscribe(data => console.log("This one tTask is: ", data));
+    createTask(newTask) {
+        return this._http.post('/api/task', newTask);
     }
-    updateOne() {
-        let obserable = this._http.get('api/task/:id');
-        obserable.subscribe(data => console.log("this is where we update a task", data));
+    getTask(task) {
+        return this._http.get(`/api/task/${task._id}`);
     }
-    deleteOne() {
-        let obserable = this._http.get('api/task/:id');
-        obserable.subscribe(data => console.log("this is where you delete", data));
+    updateOne(task) {
+        return this._http.put(`api/task/${task._id}`, task);
+    }
+    deleteOne(task) {
+        return this._http.delete(`api/task/${task._id}`);
     }
 };
 HttpService.ctorParameters = () => [
@@ -226,6 +269,48 @@ HttpService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         providedIn: 'root'
     })
 ], HttpService);
+
+
+
+/***/ }),
+
+/***/ "./src/app/task/task.component.scss":
+/*!******************************************!*\
+  !*** ./src/app/task/task.component.scss ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL3Rhc2svdGFzay5jb21wb25lbnQuc2NzcyJ9 */"
+
+/***/ }),
+
+/***/ "./src/app/task/task.component.ts":
+/*!****************************************!*\
+  !*** ./src/app/task/task.component.ts ***!
+  \****************************************/
+/*! exports provided: TaskComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TaskComponent", function() { return TaskComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+
+
+let TaskComponent = class TaskComponent {
+    constructor() { }
+    ngOnInit() {
+    }
+};
+TaskComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+        selector: 'app-task',
+        template: __webpack_require__(/*! raw-loader!./task.component.html */ "./node_modules/raw-loader/index.js!./src/app/task/task.component.html"),
+        styles: [__webpack_require__(/*! ./task.component.scss */ "./src/app/task/task.component.scss")]
+    })
+], TaskComponent);
 
 
 

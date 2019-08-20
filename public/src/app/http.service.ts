@@ -19,18 +19,21 @@ export class HttpService {
   //     tempObservable.subscribe(data => console.log("Got our tasks!", data));
   return this._http.get('/api/tasks')
    }
-
-   getTask(){
-     let obserable = this._http.get('/api/task/:id');
-      obserable.subscribe(data => console.log("This one tTask is: ", data));
+   createTask(newTask){
+     return this._http.post('/api/task',newTask)
    }
 
-   updateOne(){
-     let obserable = this._http.get('api/task/:id');
-      obserable.subscribe(data => console.log("this is where we update a task", data));
+   getTask(task:any){
+    return this._http.get(`/api/task/${task._id}`);
+    
    }
-   deleteOne(){
-     let obserable = this._http.get('api/task/:id');
-        obserable.subscribe(data => console.log("this is where you delete", data));
+
+   updateOne(task:any){
+     return  this._http.put(`api/task/${task._id}`,task);
+    
+   }
+   deleteOne(task:any){
+     return this._http.delete(`api/task/${task._id}`);
+    
    }
   }

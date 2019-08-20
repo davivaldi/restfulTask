@@ -7,13 +7,12 @@ exports.index = function(req,res) {
 }
 
 exports.getTask = function(req,res) {
-    Task.findOne({_id: req.params.id})
+    Task.findOne({_id: req.params._id})
     .then(data => res.json(data))
     .catch(err => res.json(err)); 
 }
 
 exports.createTask = function(req,res) {
-    console.log(req.params);
     const task = new Task();
     task.title = req.body.title;
     task.description = req.body.description;
@@ -32,7 +31,7 @@ exports.deleteOne = function(req,res) {
 
 exports.updateOne = function(req,res) {
     console.log("i made it momma");
-    Rhino.updateOne({_id: req.params._id}, {
+    Task.updateOne({_id: req.params._id}, {
         title: req.body.title,
         description: req.body.description,
         completed: req.body.completed
